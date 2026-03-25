@@ -29,7 +29,11 @@
         }
         #curtain-l { left: 0; justify-content: flex-end; border-right: 3px solid var(--gold); }
         #curtain-r { right: 0; justify-content: flex-start; border-left: 3px solid var(--gold); }
-        .curtain-text { color: var(--gold); font-size: 2.5rem; padding: 30px; letter-spacing: 5px; text-align: center; }
+        
+        .curtain-text { 
+            color: var(--gold); font-size: 2.5rem; padding: 20px; 
+            letter-spacing: 5px; text-align: center; line-height: 1.2;
+        }
 
         /* --- VIBRANT BACKGROUND DECOR --- */
         .decor-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
@@ -44,18 +48,20 @@
         .main-wrapper {
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; height: 100vh; text-align: center;
-            position: relative; z-index: 10;
+            position: relative; z-index: 10; padding: 20px;
         }
 
         .banner-text {
             font-size: 4.5rem; color: #ff4d6d; text-shadow: 4px 4px 0px white;
             margin-bottom: 5px; opacity: 0; transform: scale(0.8);
             transition: all 1.2s ease 1.5s;
+            width: 90%;
         }
 
         #personal-message {
-            font-size: 1.8rem; color: var(--text-color); height: 1.6em; 
-            margin-bottom: 20px; font-weight: bold; min-height: 40px;
+            font-size: 1.8rem; color: var(--text-color); height: auto; 
+            margin-bottom: 20px; font-weight: bold; min-height: 60px;
+            max-width: 600px;
         }
 
         /* --- THE ENHANCED GIFT --- */
@@ -78,19 +84,31 @@
         .gift-lid { width: 110%; height: 55px; background: #ff4d6d; position: absolute; top: -15px; left: -5%; border-radius: 6px; z-index: 15; }
         .ribbon { position: absolute; left: 50%; transform: translateX(-50%); width: 45px; height: 100%; background: var(--gold); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 
-        /* --- BIGGER PHOTOS & BALLOONS --- */
+        /* --- PHOTOS & BALLOONS --- */
         .polaroid {
-            position: absolute; width: 220px; 
-            background: white; padding: 12px 12px 45px 12px;
+            position: absolute; width: 200px; 
+            background: white; padding: 10px 10px 35px 10px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 4px;
             animation: floatAway 8s linear forwards; z-index: 20;
         }
-        .polaroid img { width: 100%; height: 220px; object-fit: cover; }
+        .polaroid img { width: 100%; height: 200px; object-fit: cover; }
 
         .balloon-item {
-            position: absolute; font-size: 6rem; 
+            position: absolute; font-size: 5rem; 
             animation: floatAway 6s ease-in forwards; z-index: 19;
             filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.2));
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 600px) {
+            .curtain-text { font-size: 1.5rem; letter-spacing: 2px; }
+            .banner-text { font-size: 2.2rem; text-shadow: 2px 2px 0px white; }
+            #personal-message { font-size: 1.2rem; min-height: 50px; }
+            #gift-container { width: 160px; height: 160px; }
+            .gift-lid { height: 40px; }
+            .polaroid { width: 140px; padding-bottom: 25px; }
+            .polaroid img { height: 140px; }
+            .balloon-item { font-size: 3.5rem; }
         }
 
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.1); } }
@@ -139,10 +157,10 @@
 
         function init() {
             const container = document.getElementById('sparkle-container');
-            for(let i=0; i<40; i++) {
+            for(let i=0; i<30; i++) {
                 const s = document.createElement('div');
                 s.className = 'sparkle';
-                s.style.width = s.style.height = Math.random() * 6 + 2 + 'px';
+                s.style.width = s.style.height = Math.random() * 5 + 2 + 'px';
                 s.style.left = Math.random() * 100 + 'vw';
                 s.style.top = Math.random() * 100 + 'vh';
                 s.style.animationDelay = Math.random() * 2 + 's';
@@ -172,42 +190,43 @@
             
             gift.classList.add('opened');
 
-            // --- THE 4-SECOND SYNC ---
-            // Sets the audio to start at exactly 4 seconds
+            // --- THE 5-SECOND SYNC ---
             audio.currentTime = 5; 
-            audio.play().catch(() => console.log("Music play triggered."));
+            audio.play().catch(() => console.log("Music play blocked - interaction needed."));
 
             // Professional Confetti Cannon
             const end = Date.now() + (5 * 1000);
             (function frame() {
-                confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0 }, colors: ['#ff758c', '#ffd700', '#ffffff'] });
-                confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1 }, colors: ['#ff758c', '#ffd700', '#ffffff'] });
+                confetti({ particleCount: 5, angle: 60, spread: 60, origin: { x: 0 }, colors: ['#ff758c', '#ffd700'] });
+                confetti({ particleCount: 5, angle: 120, spread: 60, origin: { x: 1 }, colors: ['#ff758c', '#ffd700'] });
                 if (Date.now() < end) requestAnimationFrame(frame);
             }());
 
             typeWriter("Wishing you a day filled with consolidation and validation! ✨", 0);
 
-            // ENHANCED BURST
-            for (let i = 0; i < 50; i++) {
+            // Responsive Burst
+            const itemCount = window.innerWidth < 600 ? 30 : 50; 
+            for (let i = 0; i < itemCount; i++) {
                 setTimeout(() => {
                     const rand = Math.random();
                     const el = document.createElement('div');
                     
-                    if (rand > 0.6) { // 40% chance Photo
+                    if (rand > 0.6) { 
                         el.className = 'polaroid';
                         const imgName = myPhotos[Math.floor(Math.random() * myPhotos.length)];
                         el.innerHTML = `<img src="${imgName}">`;
-                    } else if (rand > 0.2) { // 40% chance Balloon
+                    } else if (rand > 0.2) { 
                         el.className = 'balloon-item';
                         const emojis = ['🎈', '🎉', '✨', '🎂', '🎊'];
                         el.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-                    } else { // 20% chance Heart
+                    } else { 
                         el.className = 'balloon-item';
-                        el.style.fontSize = "4rem";
                         el.innerHTML = "💖";
                     }
 
-                    el.style.left = Math.random() * 80 + 5 + 'vw';
+                    // Constrain photos within viewport
+                    const safeWidth = window.innerWidth < 600 ? 70 : 80;
+                    el.style.left = Math.random() * safeWidth + 5 + 'vw';
                     el.style.animationDuration = (Math.random() * 3 + 5) + 's';
                     document.body.appendChild(el);
                     
