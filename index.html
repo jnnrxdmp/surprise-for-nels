@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise for Ma'am Nels! ✨</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary: #ff758c;
+            --gold: #ffd700;
+            --bg: #fff0f3;
+            --text-color: #d63384;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg); overflow: hidden;
+            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
+        }
+
+        /* --- ENTRANCE CURTAINS --- */
+        #curtain-l, #curtain-r {
+            position: fixed; top: 0; width: 50%; height: 100%;
+            background: #b91d47; z-index: 100;
+            transition: transform 1.8s cubic-bezier(0.7, 0, 0.3, 1);
+            display: flex; align-items: center;
+            box-shadow: 0 0 40px rgba(0,0,0,0.4);
+        }
+        #curtain-l { left: 0; justify-content: flex-end; border-right: 3px solid var(--gold); }
+        #curtain-r { right: 0; justify-content: flex-start; border-left: 3px solid var(--gold); }
+        .curtain-text { color: var(--gold); font-size: 2.5rem; padding: 30px; letter-spacing: 5px; text-align: center; }
+
+        /* --- VIBRANT BACKGROUND DECOR --- */
+        .decor-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        
+        .sparkle {
+            position: absolute; background: white; border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; scale: 1.2; } }
+
+        .main-wrapper {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; height: 100vh; text-align: center;
+            position: relative; z-index: 10;
+        }
+
+        .banner-text {
+            font-size: 4.5rem; color: #ff4d6d; text-shadow: 4px 4px 0px white;
+            margin-bottom: 5px; opacity: 0; transform: scale(0.8);
+            transition: all 1.2s ease 1.5s;
+        }
+
+        #personal-message {
+            font-size: 1.8rem; color: var(--text-color); height: 1.6em; 
+            margin-bottom: 20px; font-weight: bold; min-height: 40px;
+        }
+
+        /* --- THE ENHANCED GIFT --- */
+        .gift-label {
+            font-size: 1.4rem; color: #b91d47; font-weight: bold;
+            margin-bottom: 15px; animation: pulse 1.5s infinite;
+            text-shadow: 1px 1px 0px white;
+        }
+
+        #gift-container {
+            position: relative; width: 220px; height: 220px; cursor: pointer;
+        }
+        
+        .gift-box { 
+            width: 100%; height: 100%; background: var(--primary); 
+            border-radius: 12px; position: relative;
+            box-shadow: 0 15px 40px rgba(255, 117, 140, 0.5);
+            animation: shake 2s infinite;
+        }
+        .gift-lid { width: 110%; height: 55px; background: #ff4d6d; position: absolute; top: -15px; left: -5%; border-radius: 6px; z-index: 15; }
+        .ribbon { position: absolute; left: 50%; transform: translateX(-50%); width: 45px; height: 100%; background: var(--gold); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+
+        /* --- BIGGER PHOTOS & BALLOONS --- */
+        .polaroid {
+            position: absolute; width: 220px; 
+            background: white; padding: 12px 12px 45px 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 4px;
+            animation: floatAway 8s linear forwards; z-index: 20;
+        }
+        .polaroid img { width: 100%; height: 220px; object-fit: cover; }
+
+        .balloon-item {
+            position: absolute; font-size: 6rem; 
+            animation: floatAway 6s ease-in forwards; z-index: 19;
+            filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.2));
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.1); } }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0); }
+            10%, 30%, 50% { transform: rotate(-4deg); }
+            20%, 40%, 60% { transform: rotate(4deg); }
+        }
+
+        @keyframes floatAway {
+            0% { transform: translateY(110vh) rotate(0deg) scale(0.5); opacity: 0; }
+            10% { opacity: 1; transform: translateY(90vh) scale(1); }
+            100% { transform: translateY(-130vh) rotate(20deg); opacity: 0; }
+        }
+
+        .opened .gift-lid, .opened .gift-box, .opened .gift-label { display: none; }
+    </style>
+</head>
+<body onload="init()">
+
+    <div id="curtain-l"><div class="curtain-text">READY FOR A</div></div>
+    <div id="curtain-r"><div class="curtain-text">SURPRISE ?</div></div>
+
+    <div class="decor-layer" id="sparkle-container"></div>
+
+    <div class="main-wrapper">
+        <h1 id="bday-text" class="banner-text">Happy Birthday Ma'am Nels! 🎂</h1>
+        <div id="personal-message"></div>
+        
+        <div id="gift-wrapper">
+            <div class="gift-label" id="label">✨ OPEN YOUR GIFT ✨</div>
+            <div id="gift-container" onclick="openSurprise()">
+                <div class="gift-lid"></div>
+                <div class="gift-box"><div class="ribbon"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="music" loop>
+        <source src="birthdaysong.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const myPhotos = ['nelai1.jpg', 'nelai2.jpg', 'nelai3.jpg', 'nelai4.jpg'];
+
+        function init() {
+            const container = document.getElementById('sparkle-container');
+            for(let i=0; i<40; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.width = s.style.height = Math.random() * 6 + 2 + 'px';
+                s.style.left = Math.random() * 100 + 'vw';
+                s.style.top = Math.random() * 100 + 'vh';
+                s.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(s);
+            }
+
+            setTimeout(() => {
+                document.getElementById('curtain-l').style.transform = 'translateX(-100%)';
+                document.getElementById('curtain-r').style.transform = 'translateX(100%)';
+                document.getElementById('bday-text').style.opacity = '1';
+                document.getElementById('bday-text').style.transform = 'scale(1)';
+            }, 1500);
+        }
+
+        function typeWriter(text, i, fnCallback) {
+            if (i < text.length) {
+                document.getElementById("personal-message").innerHTML = text.substring(0, i+1) + '<span style="color:var(--primary)">|</span>';
+                setTimeout(() => typeWriter(text, i + 1, fnCallback), 80);
+            } else if (typeof fnCallback == 'function') {
+                setTimeout(fnCallback, 1000);
+            }
+        }
+
+        function openSurprise() {
+            const gift = document.getElementById('gift-wrapper');
+            const audio = document.getElementById('music');
+            
+            gift.classList.add('opened');
+
+            // --- THE 4-SECOND SYNC ---
+            // Sets the audio to start at exactly 4 seconds
+            audio.currentTime = 5; 
+            audio.play().catch(() => console.log("Music play triggered."));
+
+            // Professional Confetti Cannon
+            const end = Date.now() + (5 * 1000);
+            (function frame() {
+                confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0 }, colors: ['#ff758c', '#ffd700', '#ffffff'] });
+                confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1 }, colors: ['#ff758c', '#ffd700', '#ffffff'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+
+            typeWriter("Wishing you a day filled with consolidation and validation! ✨", 0);
+
+            // ENHANCED BURST
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const rand = Math.random();
+                    const el = document.createElement('div');
+                    
+                    if (rand > 0.6) { // 40% chance Photo
+                        el.className = 'polaroid';
+                        const imgName = myPhotos[Math.floor(Math.random() * myPhotos.length)];
+                        el.innerHTML = `<img src="${imgName}">`;
+                    } else if (rand > 0.2) { // 40% chance Balloon
+                        el.className = 'balloon-item';
+                        const emojis = ['🎈', '🎉', '✨', '🎂', '🎊'];
+                        el.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                    } else { // 20% chance Heart
+                        el.className = 'balloon-item';
+                        el.style.fontSize = "4rem";
+                        el.innerHTML = "💖";
+                    }
+
+                    el.style.left = Math.random() * 80 + 5 + 'vw';
+                    el.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                    document.body.appendChild(el);
+                    
+                    setTimeout(() => el.remove(), 8000);
+                }, i * 200);
+            }
+        }
+    </script>
+</body>
+</html>
